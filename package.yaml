@@ -33,6 +33,13 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -W
+    - -Wall
+    - -Wextra
+    - -Wcompat
+    - -Wincomplete-record-updates
+    - -Wincomplete-uni-patterns
+    - -Wredundant-constraints
     dependencies:
     - funEvalExpr
 

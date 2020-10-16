@@ -3,7 +3,7 @@ NAME 			= 	funEvalExpr
 
 all:
 	stack build
-	cp $(BINARY_PATH)/bin/$(NAME)-exe ./$(NAME)
+	cp $(BINARY_PATH)/bin/$(NAME) ./$(NAME)
 
 clean:
 	stack clean

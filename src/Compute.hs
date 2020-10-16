@@ -2,13 +2,15 @@ module Compute
     ( UnaryOperator (..),
       BinaryOperator (..),
       Operation (..),
+      Computable (..),
     ) where
 
 import Exception (EEExceptions(ComputeException))
 import Control.Exception (throw)
+import Numeric(showFFloat)
 
-data UnaryOperator  = Minus  | Plus  | Parenthesis
-data BinaryOperator = BMinus | BPlus | Pow | Mult | Div
+data UnaryOperator  = Minus  | Plus  | Parenthesis deriving (Show)
+data BinaryOperator = BMinus | BPlus | Pow | Mult | Div deriving (Eq, Show)
 
 data Operation = UnaryOperation UnaryOperator Operation
                | BinaryOperation BinaryOperator Operation Operation
@@ -16,6 +18,33 @@ data Operation = UnaryOperation UnaryOperator Operation
 
 class Computable a where
     compute :: a -> a
+
+instance Ord BinaryOperator where
+    compare Pow Pow       = EQ
+    compare Pow Div       = GT
+    compare Pow BPlus     = GT
+    compare Pow BMinus    = GT
+    compare Pow Mult      = GT
+    compare BPlus BMinus  = LT
+    compare BPlus Pow     = LT
+    compare BPlus Mult    = LT
+    compare BPlus BPlus   = EQ
+    compare BPlus Div     = LT
+    compare BMinus BPlus  = GT
+    compare BMinus Pow    = LT
+    compare BMinus Div    = LT
+    compare BMinus Mult   = LT
+    compare BMinus BMinus = EQ
+    compare Mult Mult     = EQ
+    compare Mult Div      = EQ
+    compare Mult BPlus    = GT
+    compare Mult BMinus   = GT
+    compare Mult Pow      = LT
+    compare Div Div       = EQ
+    compare Div Mult      = EQ
+    compare Div Pow       = LT
+    compare Div BPlus     = GT
+    compare Div BMinus    = GT
 
 instance Computable Operation where
     compute v@(Value _)                           = v
@@ -59,7 +88,9 @@ instance Fractional Operation where
     fromRational a        = Value $ fromRational a
 
 instance Show Operation where
-    show (Value a) = show a
+    show (Value a) = showFFloat (Just 2) a ""
+    show (BinaryOperation operator op op2) = "(" ++ show op ++ " " ++ show operator ++ " " ++ show op2 ++ ")"
+    show (UnaryOperation operator op ) = "(" ++ show operator ++ " " ++ show op ++ ")"
 
 haltIfNull :: Operation -> Operation
 haltIfNull (Value 0)   = throw $ ComputeException "Floating point exception"

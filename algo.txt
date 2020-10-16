@@ -1,0 +1,9 @@
+parser (MINUS:(Value x):xs) = parseOperation xs $ utree minus value
+parser (PLUS:(Value x):xs) = parseOperation xs $ utree minus value
+parser = parseInner
+
+parseInner (OPENPAR:xs) t = let (inner, after) = findLovePar xs in parseOperation after $ parser inner
+parseInner (Value v: xs) t = parseOperation xs $ createLeaf v
+
+parseOperation (Plus:xs) t = goInto t (parseInner xs) Plus
+parseOperation (Mult:xs) t = addMultTree t (parseInner xs) Mult
