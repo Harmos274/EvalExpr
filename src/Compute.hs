@@ -9,12 +9,12 @@ import Exception (EEExceptions(ComputeException))
 import Control.Exception (throw)
 import Numeric(showFFloat)
 
-data UnaryOperator  = Minus  | Plus  | Parenthesis deriving (Show)
+data UnaryOperator  = Minus  | Plus  | Parenthesis deriving (Eq, Show)
 data BinaryOperator = BMinus | BPlus | Pow | Mult | Div deriving (Eq, Show) -- Ord
 
 data Operation = UnaryOperation UnaryOperator Operation
                | BinaryOperation BinaryOperator Operation Operation
-               | Value Float -- Computable, Num, Floating, Fractional
+               | Value Float deriving (Eq) -- Computable, Num, Floating, Fractional
 
 class Computable a where
     compute :: a -> a
@@ -47,16 +47,15 @@ instance Ord BinaryOperator where
     compare Div BMinus    = GT
 
 instance Computable Operation where
-    compute v@(Value _)                           = v
-    compute (UnaryOperation Minus o)              = -(compute o)
-    compute (UnaryOperation _ o)                  = compute o
-    compute (BinaryOperation BMinus o1 o2)        = compute o1 - compute o2
-    compute (BinaryOperation BPlus o1 o2)         = compute o1 + compute o2
-    compute (BinaryOperation Pow o1 o2)           = compute o1 ** compute o2
-    compute (BinaryOperation Mult o1 o2)          = compute o1 * compute o2
-    compute (BinaryOperation Div o1 (Value 0))    = throw $ ComputeException "Floating point exception"
-    compute (BinaryOperation Div o1 o2@(Value _)) = compute o1 / o2
-    compute (BinaryOperation Div o1 o2)           = compute o1 / haltIfNull (compute o2)
+    compute v@(Value _)                       = v
+    compute (UnaryOperation Minus o)          = -(compute o)
+    compute (UnaryOperation _ o)              = compute o
+    compute (BinaryOperation BMinus o1 o2)    = compute o1 - compute o2
+    compute (BinaryOperation BPlus o1 o2)     = compute o1 + compute o2
+    compute (BinaryOperation Pow o1 o2)       = compute o1 ** compute o2
+    compute (BinaryOperation Mult o1 o2)      = compute o1 * compute o2
+    compute (BinaryOperation Div _ (Value 0)) = throw $ ComputeException "Floating point exception"
+    compute (BinaryOperation Div o1 o2)       = compute o1 / haltIfNull (compute o2)
 
 instance Floating Operation where
     pi                     = Value pi
@@ -88,9 +87,9 @@ instance Fractional Operation where
     fromRational a        = Value $ fromRational a
 
 instance Show Operation where
-    show (Value a) = showFFloat (Just 2) a ""
+    show (Value a)                         = showFFloat (Just 2) a ""
     show (BinaryOperation operator op op2) = "(" ++ show op ++ " " ++ show operator ++ " " ++ show op2 ++ ")"
-    show (UnaryOperation operator op ) = "(" ++ show operator ++ " " ++ show op ++ ")"
+    show (UnaryOperation operator op )     = "(" ++ show operator ++ " " ++ show op ++ ")"
 
 haltIfNull :: Operation -> Operation
 haltIfNull (Value 0)   = throw $ ComputeException "Floating point exception"

@@ -38,13 +38,14 @@ parseOperation (Lexer.Pow  :xs) t = assemble Compute.Pow    t (parseInner xs)
 parseOperation _                _ = throw $ ParserException "invalid operation member"
 
 assemble :: BinaryOperator -> Operation -> Operation -> Operation
-assemble o v1@(Compute.Value _) v2@(Compute.Value _)                          = BinaryOperation o v1 v2
-assemble o v1@UnaryOperation {} v2@(Compute.Value _)                          = BinaryOperation o v1 v2
-assemble o v1@UnaryOperation {} v2@UnaryOperation {}                          = BinaryOperation o v1 v2
-assemble o v1@UnaryOperation {} (BinaryOperation ope iop1 iop2)               = BinaryOperation ope (BinaryOperation o v1 iop1) iop2
-assemble o v@(Compute.Value _) v2@UnaryOperation {}                           = BinaryOperation o v v2
-assemble o v@(Compute.Value _) v2@(BinaryOperation ope iop1 iop2) | o > ope   = BinaryOperation ope (BinaryOperation o v iop1) iop2
-                                                                  | otherwise = BinaryOperation o v v2
+assemble o v1@(Compute.Value _) v2@(Compute.Value _)                           = BinaryOperation o v1 v2
+assemble o v1@UnaryOperation {} v2@(Compute.Value _)                           = BinaryOperation o v1 v2
+assemble o v1@UnaryOperation {} v2@UnaryOperation {}                           = BinaryOperation o v1 v2
+assemble o v1@UnaryOperation {} (BinaryOperation ope iop1 iop2)                = BinaryOperation ope (BinaryOperation o v1 iop1) iop2
+assemble o v1@(Compute.Value _) v2@UnaryOperation {}                           = BinaryOperation o v1 v2
+assemble o v1@(Compute.Value _) v2@(BinaryOperation ope iop1 iop2) | o > ope   = BinaryOperation ope (BinaryOperation o v1 iop1) iop2
+                                                                   | otherwise = BinaryOperation o v1 v2
+assemble _ _                    _                                              = throw $ ParserException "the impossible has happened"
 
 manageContexts :: ([Token], [Token]) -> Operation
 manageContexts (inner, after) = parseOperation (tail after) . UnaryOperation Parenthesis $ parser' inner

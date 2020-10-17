@@ -22,6 +22,6 @@ sendHelp = mapM_ putStrLn ["USAGE: ./funEvalExpr e",
 exceptionHandler :: EEExceptions -> IO ()
 exceptionHandler SendHelp              = sendHelp >> success
 exceptionHandler (ArgumentException s) = putStrLn ("Argument exception : " ++ s) >> failure
-exceptionHandler (LexerException s)    = putStrLn ("Lexing exception : " ++ s) >> failure
-exceptionHandler (ParserException s)   = putStrLn ("Parser exception : " ++ s) >> failure
-exceptionHandler (ComputeException s)  = putStrLn "Compute exception" >> failure
+exceptionHandler (LexerException s)    = putStrLn ("Lexing exception : " ++ s)   >> failure
+exceptionHandler (ParserException s)   = putStrLn ("Parser exception : " ++ s)   >> failure
+exceptionHandler (ComputeException s)  = putStrLn ("Compute exception : " ++ s)  >> failure
