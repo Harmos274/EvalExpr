@@ -10,7 +10,7 @@ import Control.Exception (throw)
 import Numeric(showFFloat)
 
 data UnaryOperator  = Minus  | Plus  | Parenthesis deriving (Show)
-data BinaryOperator = BMinus | BPlus | Pow | Mult | Div deriving (Eq, Show)
+data BinaryOperator = BMinus | BPlus | Pow | Mult | Div deriving (Eq, Show) -- Ord
 
 data Operation = UnaryOperation UnaryOperator Operation
                | BinaryOperation BinaryOperator Operation Operation
@@ -30,18 +30,18 @@ instance Ord BinaryOperator where
     compare BPlus Mult    = LT
     compare BPlus BPlus   = EQ
     compare BPlus Div     = LT
+    compare BMinus BMinus = EQ
     compare BMinus BPlus  = GT
     compare BMinus Pow    = LT
     compare BMinus Div    = LT
     compare BMinus Mult   = LT
-    compare BMinus BMinus = EQ
     compare Mult Mult     = EQ
-    compare Mult Div      = EQ
+    compare Mult Div      = LT
     compare Mult BPlus    = GT
     compare Mult BMinus   = GT
     compare Mult Pow      = LT
     compare Div Div       = EQ
-    compare Div Mult      = EQ
+    compare Div Mult      = GT
     compare Div Pow       = LT
     compare Div BPlus     = GT
     compare Div BMinus    = GT
