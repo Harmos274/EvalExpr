@@ -1,4 +1,4 @@
-module Lexer
+ module Lexer
     ( lexer,
       Token(..),
     ) where
@@ -22,7 +22,6 @@ lexer ('^':xs)           = Pow : lexer xs
 lexer (a:xs) | isSpace a = lexer xs
 lexer str                = (lexer' . getNumber) str
 
-{-# INLINE lexer' #-}
 lexer' :: (String, String) -> [Token]
 lexer' (nbr, xs) = Value nbr : lexer xs
 
