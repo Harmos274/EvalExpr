@@ -16,7 +16,7 @@ data EEExceptions = SendHelp
 instance Exception EEExceptions
 
 sendHelp :: IO ()
-sendHelp = mapM_ putStrLn ["USAGE: ./funEvalExpr e\n",
+sendHelp = mapM_ putStrLn ["USAGE: ./funEvalExpr e",
                            "\te\tThe expression to compute"]
 
 exceptionHandler :: EEExceptions -> IO ()
