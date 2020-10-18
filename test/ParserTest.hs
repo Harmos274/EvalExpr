@@ -17,7 +17,8 @@ newtype TestOperation = TestOperation Operation deriving (Eq, Show)
 parserTests :: TestTree
 parserTests = testGroup "Parser" [emptyList, singleValue, simplePlus, simpleMinus, simpleDiv,
                                   simpleMult, simplePow, unaryMinus, unaryPlus, parenthesis,
-                                  priorityMult, priorityDiv, priorityPow]
+                                  priorityMult, priorityDiv, priorityPow, wrongParenthesis,
+                                  invalidMember]
 
 emptyList :: TestTree
 emptyList = testCase "Empty list" $ assertEEException  (ParserException "No operation given") (evaluate $ parser [])
@@ -74,3 +75,13 @@ priorityPow :: TestTree
 priorityPow = testCase "Priority pow" $ assertEqual "Invalid priority weight"
     (TestOperation $ BinaryOperation BPlus (BinaryOperation Pow (Value 1) (Value 2)) (Value 1))
     (TestOperation $ parser [L.Value "1", L.Pow, L.Value "2", L.Plus, L.Value "1"])
+
+wrongParenthesis :: TestTree
+wrongParenthesis = testCase "Wrong parenthesis" $ assertEEException
+    (ParserException "parenthesis incoherence")
+    (evaluate $ parser [L.OpenParen, L.Value "1", L.Plus, L.Value "1", L.CloseParen, L.CloseParen])
+
+invalidMember :: TestTree
+invalidMember = testCase "Invalid member" $ assertEEException
+    (ParserException "invalid operation member")
+    (evaluate $ parser [L.Value "1", L.Plus, L.Plus, L.Value "2"])
