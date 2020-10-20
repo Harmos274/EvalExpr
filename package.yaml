@@ -1,10 +1,10 @@
 name:                funEvalExpr
 version:             0.1.0.0
-github:              "githubuser/evalexpr"
+github:              "Harmos274/evalexpr"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2020 Author name here"
+author:              "Alban Garofoli & Lilian Verlhac"
+maintainer:          "lilian.verlhac@epitech.eu"
+copyright:           "2020 Lilian VERLHAC"
 
 extra-source-files:
 - README.md

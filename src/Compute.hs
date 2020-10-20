@@ -19,6 +19,17 @@ data Operation = UnaryOperation UnaryOperator Operation
 class Computable a where
     compute :: a -> a
 
+instance Computable Operation where
+    compute v@(Value _)                       = v
+    compute (UnaryOperation Minus o)          = -(compute o)
+    compute (UnaryOperation _ o)              = compute o
+    compute (BinaryOperation BMinus o1 o2)    = compute o1 - compute o2
+    compute (BinaryOperation BPlus o1 o2)     = compute o1 + compute o2
+    compute (BinaryOperation Pow o1 o2)       = compute o1 ** compute o2
+    compute (BinaryOperation Mult o1 o2)      = compute o1 * compute o2
+    compute (BinaryOperation Div _ (Value 0)) = throw $ ComputeException "Floating point exception"
+    compute (BinaryOperation Div o1 o2)       = compute o1 / haltIfNull (compute o2)
+
 instance Ord BinaryOperator where
     compare Pow Pow       = EQ
     compare Pow Div       = GT
@@ -45,17 +56,6 @@ instance Ord BinaryOperator where
     compare Div Pow       = LT
     compare Div BPlus     = GT
     compare Div BMinus    = GT
-
-instance Computable Operation where
-    compute v@(Value _)                       = v
-    compute (UnaryOperation Minus o)          = -(compute o)
-    compute (UnaryOperation _ o)              = compute o
-    compute (BinaryOperation BMinus o1 o2)    = compute o1 - compute o2
-    compute (BinaryOperation BPlus o1 o2)     = compute o1 + compute o2
-    compute (BinaryOperation Pow o1 o2)       = compute o1 ** compute o2
-    compute (BinaryOperation Mult o1 o2)      = compute o1 * compute o2
-    compute (BinaryOperation Div _ (Value 0)) = throw $ ComputeException "Floating point exception"
-    compute (BinaryOperation Div o1 o2)       = compute o1 / haltIfNull (compute o2)
 
 instance Floating Operation where
     pi                     = Value pi

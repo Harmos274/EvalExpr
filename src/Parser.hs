@@ -43,7 +43,7 @@ assemble o v1@UnaryOperation {} v2@(Compute.Value _)                           =
 assemble o v1@UnaryOperation {} v2@UnaryOperation {}                           = BinaryOperation o v1 v2
 assemble o v1@UnaryOperation {} (BinaryOperation ope iop1 iop2)                = BinaryOperation ope (BinaryOperation o v1 iop1) iop2
 assemble o v1@(Compute.Value _) v2@UnaryOperation {}                           = BinaryOperation o v1 v2
-assemble o v1@(Compute.Value _) v2@(BinaryOperation ope iop1 iop2) | o > ope   = BinaryOperation ope (BinaryOperation o v1 iop1) iop2
+assemble o v1@(Compute.Value _) v2@(BinaryOperation ope iop1 iop2) | o >= ope  = BinaryOperation ope (BinaryOperation o v1 iop1) iop2
                                                                    | otherwise = BinaryOperation o v1 v2
 assemble _ _                    _                                              = throw $ ParserException "the impossible has happened"
 
